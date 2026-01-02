@@ -1,39 +1,71 @@
-<!--
-This README describes the package. If you publish this package to pub.dev,
-this README's contents appear on the landing page for your package.
+# flutter_core
 
-For information about how to write a good package README, see the guide for
-[writing package pages](https://dart.dev/tools/pub/writing-package-pages).
+This package contains the core business logic, services, and models for the application. It is built on top of `flutter_pkg`.
 
-For general information about developing packages, see the Dart guide for
-[creating packages](https://dart.dev/guides/libraries/create-packages)
-and the Flutter guide for
-[developing packages and plugins](https://flutter.dev/to/develop-packages).
--->
+## Modules
 
-TODO: Put a short description of the package here that helps potential users
-know whether this package might be useful for them.
+The package consists of several key modules:
 
-## Features
+### 1. Authentication
+Handles user login, session management, and secure storage of credentials.
 
-TODO: List what your package can do. Maybe include images, gifs, or videos.
+- **Classes**: `AuthService`, `SessionManager<T>`, `UserProfile`, `AuthToken`
+- **Documentation**: [docs/auth_module.md](docs/auth_module.md)
 
-## Getting started
+### 2. Region
+Provides access to regional data including Provinces, Cities, Districts, and SubDistricts.
 
-TODO: List prerequisites and provide or point to information on how to
-start using the package.
+- **Classes**: `RegionService`, `Province`, `City`, `District`, `SubDistrict`
+- **Documentation**: [docs/region_module.md](docs/region_module.md)
 
-## Usage
+## Installation
 
-TODO: Include short and useful examples for package users. Add longer examples
-to `/example` folder.
+Add the dependency to your project's `pubspec.yaml`:
 
-```dart
-const like = 'sample';
+```yaml
+dependencies:
+  flutter_core:
+    path: /path/to/flutter-core
 ```
 
-## Additional information
+## Quick Usage
 
-TODO: Tell users more about the package: where to find more information, how to
-contribute to the package, how to file issues, what response they can expect
-from the package authors, and more.
+### Authentication
+```dart
+import 'package:flutter_core/auth.dart';
+import 'package:flutter_pkg/http.dart';
+
+void main() async {
+  var api = ApiBase();
+  // ... configure api ...
+  
+  var session = SessionManager<UserProfile>(
+    fromJson: (json) => UserProfile.fromJson(json),
+  );
+  var auth = AuthService(api, session);
+  
+  await auth.login(username: "user", password: "pw");
+}
+```
+
+### Region
+```dart
+import 'package:flutter_core/region.dart';
+import 'package:flutter_pkg/http.dart';
+
+void main() async {
+  var api = ApiBase();
+  var region = RegionService(api);
+  
+  var provinces = await region.getProvinces();
+}
+```
+
+## Testing
+
+Integration tests are available to verify connectivity with the backend API.
+
+```bash
+flutter test test/auth_test.dart
+flutter test test/region_api_test.dart
+```
