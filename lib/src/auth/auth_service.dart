@@ -35,8 +35,35 @@ class AuthService {
     }
   }
 
-  Future<void> logout() async {
+  Future<ApiResponse<UserProfile>> verifyToken() async {
+    final response = await _api.post('/auth/token/verify') as ApiResponse;
+
+    if (response.meta.isSuccess && response.data != null) {
+      final userProfile = UserProfile.fromJson(response.data as Map<String, dynamic>);
+      await _sessionManager.saveSession(userProfile);
+      return ApiResponse<UserProfile>(
+        meta: response.meta,
+        data: userProfile,
+      );
+    } else {
+      return ApiResponse<UserProfile>(
+        meta: response.meta,
+        data: null,
+      );
+    }
+  }
+
+  Future<ApiResponse<void>> logout() async {
+    // Call API to invalidate token
+    final response = await _api.post('/auth/logout') as ApiResponse;
+    
+    // Clear local session unconditionally
     await _sessionManager.clearSession();
+
+    return ApiResponse<void>(
+      meta: response.meta,
+      data: null,
+    );
   }
 
   Future<UserProfile?> getCurrentUser() {
